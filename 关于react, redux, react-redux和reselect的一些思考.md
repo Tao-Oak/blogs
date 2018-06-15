@@ -657,31 +657,34 @@ redux充分利用了纯函数的思想，我们的mapStateToProps其本身也是
 ```
 const DefaultDemoData = { counter: 0 }
 
-const tonsOfCalculation = (counter) => {
-  let lastCounter, lastResult
-  return () => {
-    if (lastCounter && lastResult && lastCounter === counter) {
-      return lastResult
-    }
-  
-    lastCounter = counter
-    for (let i = 0, i < 1000000000000; i++) {
-  	  counter *= i
-    }
-    lastResult = counter
-    
-    return counter
-  }
+const tonsOfCalculationCb = (counter) => {
+	for (let i = 0, i < 1000000000000; i++) {
+		counter *= i
+	}
+	return counter
 }
 
+const createTonsOfCalculation = (cb) => {
+	let lastCounter, lastResult
+	return (counter) => {
+		if (!lastResult || counter != lastCounter) {
+			lastResult = cb(counter)
+		}
+		lastCounter = counter
+		return lastResult
+	}
+}
+
+const tonsOfCalculation = createTonsOfCalculation(tonsOfCalculationCb)
+
 const mapStateToProps = (state, ownProps) => {
-  let demo_1 = state.demo_1
-  if (!demo_1.counter) {
-    demo_1 = DefaultDemoData
-  }
-  demo_1.counter = tonsOfCalculation(demo_1.counter)()
-  
-  return { demoData: demo_1 }
+	let demo_1 = state.demo_1
+	if (!demo_1.counter) {
+		demo_1 = DefaultDemoData
+	}
+	demo_1.counter = tonsOfCalculation(demo_1.counter)
+
+	return { demoData: demo_1 }
 }
 ```
 
@@ -1148,7 +1151,7 @@ export const createSelector = createSelectorCreator(defaultMemoize)
 const feedListSelector = createSelector(getFeedIds, getFeedById, feedListSelectorCb)
 ```
 
-此时createSelectorCreator源码中的dependencies等于[ getFeedIds, getFeedById ], resultFunc等于feedListSelectorCb。feedListSelector等于defaultMemoize返回的内部函数，即position 3处的内部函数。
+此时createSelectorCreator源码中的dependencies等于[ getFeedIds, getFeedById ], resultFunc等于feedListSelectorCb。feedListSelector等于defaultMemoize返回的内部函数，即position 1处的内部函数。
 
 在mapStateToProps中计算feedList：
 
@@ -1156,7 +1159,7 @@ const feedListSelector = createSelector(getFeedIds, getFeedById, feedListSelecto
 let feedList = feedListSelector(state, idListKey)
 ```
 
-我们调用feedListSelector并传递了两个参数state和idListKey，上面我们说到feedListSelector指向的是position 3处的内部函数，在该函数内部，首先判断当前传入的参数是否与上次传入的参数相同。当state和idListKey均没有发生改变时，返回上次计算的结果；否则执行position 4处的代码，重新计算feedList。
+我们调用feedListSelector并传递了两个参数state和idListKey，上面我们说到feedListSelector指向的是position 1处的内部函数，在该函数内部，首先判断当前传入的参数是否与上次传入的参数相同。当state和idListKey均没有发生改变时，返回上次计算的结果；否则执行position 4处的代码，重新计算feedList。
 
 position 4处的func指向的是position 2处的内部函数，又因为```func.apply(null, arguments)```，我们传递给feedListSelector的参数全部传给了position 2处的内部函数。在position 2处函数的内部，首先计算出相关依赖数据，即依次执行getFeedIds和getFeedById。由```dependencies[i].apply(null, arguments)```可知，传递给feedListSelector参数全部传给了getFeedIds和getFeedById。
 
