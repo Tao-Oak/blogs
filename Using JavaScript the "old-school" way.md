@@ -1,3 +1,4 @@
+<font face="Times New Roman">
 <h1>Modern JavaScript Explained For Dinosaurs</h1>
 
 ![](https://cdn-images-1.medium.com/max/1600/1*H8PH-HaV43gZyBJz0mJHxA.png)
@@ -231,7 +232,7 @@ $ ./node_modules/.bin/webpack index.js bundle.js
 
 如果你刷新浏览器，你会看到一切都像以前一样正常工作。
 
-注意，每次修改 ```index.js```文件后，我们都需要运行上述webpack命令。这很枯燥，当我们使用webpack高级功能(例如[生成源码映射](https://webpack.js.org/guides/development/#using-source-maps)以帮助我们从编译代码调试原始代码)时，它会变得更加枯燥乏味。webpack可以从工程的根目录下一个名为 ```webpack.config.js```的文件中读取配置选项，在我们的例子中，```webpack.config.js```应该长这样：
+注意，每次修改 ```index.js```文件后，我们都需要运行上述webpack命令。这很枯燥，当我们使用webpack高级功能(例如[生成源码映射](https://webpack.js.org/guides/development/#using-source-maps)以帮助我们从转译后的代码调试原始代码)时，它会变得更加枯燥乏味。webpack可以从工程的根目录下一个名为 ```webpack.config.js```的文件中读取配置选项，在我们的例子中，```webpack.config.js```应该长这样：
 
 ```
 // webpack.config.js
@@ -255,11 +256,112 @@ $ ./node_modules/.bin/webpack
 
 ![](https://cdn-images-1.medium.com/max/1600/1*ee_ivxNTKgIJTjmEMC4-dg.png)
 
-### 编译代码以支持新的语言特性(babel)
+### 转译代码以支持新的语言特性(babel)
 
-编译代码意味着将一种语言的代码转换为另一种类似语言的代码。这是前端开发的一个重要组成部分－－因为浏览器添加新功能的速度非常缓慢，而带有实验性功能的新语言可以被编译成浏览器兼容的语言。
+转译代码意味着将一种语言的代码转换为另一种类似语言的代码。这是前端开发的一个重要组成部分－－因为浏览器添加新功能的速度非常缓慢，而带有实验性功能的新语言可以被转译成浏览器兼容的语言。
 
-对于CSS，有[Sass](http://sass-lang.com/)，[Less](http://lesscss.org/)和[Stylus](http://stylus-lang.com/)等。对于JavaScript，曾经一段时间内最受欢迎的转换器是CoffeeScript(2010年左右发布)，而现在，大部分人都使用[babel](https://babeljs.io/)或[TypeScript](http://www.typescriptlang.org/)。
+对于CSS，有[Sass](http://sass-lang.com/)，[Less](http://lesscss.org/)和[Stylus](http://stylus-lang.com/)等。对于JavaScript，曾经一段时间内最受欢迎的转换器是CoffeeScript(2010年左右发布)，而现在，大部分人都使用[babel](https://babeljs.io/)或[TypeScript](http://www.typescriptlang.org/)。CoffeeScript是一门通过大量修改JavaScript语言来提升JavaScript能力的一门语言。Babel本身不是一门新的语言，但是它是一个将浏览器尚未全部兼容的下一代JavaScript(ES6及以上)转换为更兼容的JavaScript(ES5)的转换器。Typescript是一种与下一代JavaScript基本相同的语言，但也增加了可选的静态类型。许多人选择使用babel，因为它最接近vanilla JavaScript。
+
+让我们来看一个如何在现有的webpack构建步骤中使用babel的例子。首先我们通过下面的命令将babel安装到我们的工程中：
+
+```
+$ npm install babel-core babel-preset-env babel-loader --save-dev
+```
+
+注意，我们在开发依赖中安装了三个独立的包-- ```babel-core```是babel的主要组成部分，```babel-preset-env```预订了需要转换的JavaScript新特性，```babel-loader```是一个能使babel与webpack一起工作的软件包。我们通过修改 ```webpack.config.js```来使用```babel-loader```：
+
+```javascript
+// webpack.config.js
+module.exports = {
+  entry: './index.js',
+  output: {
+    filename: 'bundle.js'
+  },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['env']
+          }
+        }
+      }
+    ]
+  }
+};
+```
+
+这个语法可能会让人感到困惑，不过幸运的是，我们不需要经常去改动它。基本原理是，我们告诉webpack去查找所有.js文件(包括 ```node_modules```中的.js文件)，然后通过```babel-loader```与```babel-preset-env```来进行转换。你可以在[这里](https://webpack.js.org/configuration/)看到配置webpack的详细语法。
+
+现在一切都已搭建好，我们可以在JavaScript中使用ES2015的特性了。以下是使用[ES2015模版字符串](https://babeljs.io/docs/en/learn/#ecmascript-2015-features-template-strings)的示例：
+
+```javascript
+// index.js
+var moment = require('moment');
+
+console.log("Hello from JavaScript!");
+console.log(moment().startOf('day').fromNow());
+
+var name = "Bob", time = "today";
+console.log(`Hello ${name}, how are you ${time}?`);
+```
+
+我们还可以使用[ES2015 import](https://babeljs.io/docs/en/learn/#ecmascript-2015-features-modules)语句来替代require加载模块的功能。今天，你可以在很多代码库发现这种写法。
+
+```javascript
+// index.js
+import moment from 'moment';
+
+console.log("Hello from JavaScript!");
+console.log(moment().startOf('day').fromNow());
+
+var name = "Bob", time = "today";
+console.log(`Hello ${name}, how are you ${time}?`);
+```
+
+在这个例子中，import语法与require语法没有多大区别，但对于更高级的场景，import会更灵活。因为修改了 ```index.js```文件，我们需要再次运行这句命令：
+
+```
+$ ./node_modules/.bin/webpack
+```
+刷新浏览器后你会看到期望的效果。在写这篇文章的时候，许多当代浏览器都已经支持了ES2015的特性，所以很难分辨出babel是否起了作用。你可以在IE9等旧版浏览器中对其进行测试，你也可以在 ```bundle.js```查找转换后的这行代码：
+
+```javascript
+// bundle.js
+// ...
+console.log('Hello ' + name + ', how are you ' + time + '?');
+// ...
+```
+
+这里你可以看到，babel将ES2015的模版字符串转换成了常规的JavaScript字符串拼接，以此来保证浏览器兼容性。尽管这个例子可能不太令人兴奋，但是能转译代码是一个非常强大的功能。我们现在就可以使用JavaScript即将要支持的新特性，如[async/await](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function)等，来编写更好的代码。尽管转译有时候会繁琐而痛苦，但它让我们能够在今天去测试将来的语言特性，这也使得JavaScript语言在过去几年里得到了显著的提升。
+
+我们差不多完成了，但在我们的工作流中任然存在一些未完成的边界。如果我们关心性能，我们需要缩小([minifying](https://en.wikipedia.org/wiki/Minification_%28programming%29))打包后的文件，因为我们有了构建这一步，缩小代码也变得非常简单。每次修改JavaScript后，我们都需要重新运行webpack命令，接下来我们将讨论解决这一问题的便捷工具。
+
+### 使用task runner(npm脚本)
+既然我们已经使用了构建步骤来处理JavaScript模块，使用一个task runner来自动化各构建任务也变得非常合理。对于前端开发，任务包括缩小代码(minifying code)、优化图片，运行测试等。
 
 
-babel本身不是一门新的语言，但是它是一个将浏览器尚未全部兼容的下一代JavaScript(ES6及以上)转换为更兼容的JavaScript(ES5)。
+</font>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
