@@ -343,6 +343,46 @@ console.log('Hello ' + name + ', how are you ' + time + '?');
 ### 使用task runner(npm脚本)
 既然我们已经使用了构建步骤来处理JavaScript模块，使用一个task runner来自动化各构建任务也变得非常合理。对于前端开发，任务包括缩小代码(minifying code)、优化图片，运行测试等。
 
+在2013年，Grunt是最流行的前端前端task runner，随后Glup流行了一小段时间，-它们都是通过插件来包装其他命令行工具。而现在最流行的选择似乎是使用npm包管理器内置的脚本功能，该功能不需要依赖插件，而是直接与其他命令行工具一起使用。
+
+让我们编写一些npm脚本来帮助我们更方便地使用webpack，这需要改动 ```package.json```文件：
+
+```
+{
+  "name": "modern-javascript-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --progress -p",
+    "watch": "webpack --progress --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "moment": "^2.19.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
+    "webpack": "^3.7.1"
+  }
+}
+```
+
+这里我们添加了两个新的脚本：```build```和```watch```。我们需要通过下述命令来运行```build```脚本：
+
+```
+$ npm run build
+```
+这会运行webpack(使用我们之前写在```webpack.config.js```中的配置项)，并带了```--progress```和```-p```这两个可选项。其中```--progress```用于展示百分比进度，```-p```会在生产环境下压缩代码。下述命令会运行```watch```脚本：
+
+```
+$ npm run watch
+```
+这会使用```--watch```选项，它会在每次JavaScript文件更改时自动运行webpack，这对开发来说非常有用。
 
 </font>
 
