@@ -384,11 +384,58 @@ $ npm run watch
 ```
 这会使用```--watch```选项，它会在每次JavaScript文件更改时自动运行webpack，这对开发来说非常有用。
 
+请注意，使用 ```package.json```中的脚本运行webpack时，我不需要指定webpack的全路径：```./node_modules/.bin/webpack```，因为 ```node.js```知道所有npm模块的路径。这非常方便！通过安装 ```webpack-dev-server```，我们可以让事情变得更加简单。 ```webpack-dev-server```是一个单独的工具，它提供了一个带有实时重新加载(live reloading)功能的简单web服务器。我们可以通过下述命令将它安装为开发依赖：
+
+```
+$ npm install webpack-dev-server --save-dev 
+```
+然后修改 ```package.json```文件：
+
+```
+{
+  "name": "modern-javascript-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --progress -p",
+    "watch": "webpack --progress --watch",
+    "server": "webpack-dev-server --open"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "moment": "^2.19.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
+    "webpack": "^3.7.1"
+  }
+}
+```
+
+### 结论
+
+简而言之，这就是现代JavaScript。我们从简单的HTML和JS转向使用**包管理器(package manager)**来自动下载第三方依赖包，使用**模块打包器(module bundler)**来创建单个脚本文件，使用**转译器(transpiler)**来支持未来的语言特性，和使用**task runner**来自动化各构建过程。这里面可定有许多迷人的东西，特别是对一个初学者来说。Web开发因为它很容易开始与运行，曾是编程新手的一个很好的切入点；但现在它可能会非常难，特别是在各种工具都在快速变化的情况下。
+
+尽管如此，这一切并没有像看起来的那么糟。事情正在稳定下来，特别在引入node生态作为一种可用的前端开发方式后。我们可以使用npm作为包管理器，使用node的```require```或```import```语句来处理模块，使用npm脚本来运行各种任务，这个开发流程很好也很一致，与一两年前相比，这已经是一个大大简化的工作流程了。
+
+对初学者或经验丰富的开发人员来说，另外一个好消息是现在的框架通常都会提供一些工具，以帮助开发者们更简单地开始或入门。如Ember的 ```ember-cli```，它对Angular的 ```angular-cli```有非常大的影响、React的 ```create-react-app```、Vue的```vue-cli```等等。所有这些工具都会帮你设置好工程需要的一切－－你所需要做的就是开始编写代码。这些工具本身并不神奇，它们只是按照一种一致且起作用的方式帮你设置好所有的东西－－但你依然可能会遇到需要对webpack、babel等工具进行额外配置的情况，因此理解这些工具都是干什么的依然十分重要。
+
+现在JavaScript依然在快速地发展与进化。
+
+Modern JavaScript can definitely be frustrating to work with as it continues to change and evolve at a rapid pace. 
+现代JavaScript肯定会让人感到沮丧，因为它会继续快速地改变和发展。
+
+即使它有时可能会重复造一些轮子，但JavaScript的快速发展也推动了诸如hot reloading、real-time linting和time-travel debugging等创新技术的产生。成为一名开发人员是一个激动人心的时刻，我希望这些信息能够成为路线图，帮助您踏上旅途！
+
+![](https://cdn-images-1.medium.com/max/1600/1*H6NN_RxZNeVyLYpCirsslg.png)
+
+*特别感谢[@ryanqnorth](https://twitter.com/ryanqnorth)的[恐龙漫画](http://www.qwantz.com/)，它在2003年(恐龙统治网络时)以来提供了一些最好的荒诞幽默。*
 </font>
-
-
-
-
 
 
 
