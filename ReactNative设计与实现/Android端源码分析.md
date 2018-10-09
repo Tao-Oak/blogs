@@ -5,7 +5,7 @@
 
 ## 一、Android端的初始化流程
 
-通过前面的介绍，我们已经了解到，在Android上，RN工程其本身就是一个Android工程，与JS相关的一切都发生在ReactRootView内部。ReactRootView继承自FrameLayout，也就是说ReactRootView是一个View，我们可以像操作Android UI框架里的其他View一样来操作ReactRootView。通过[Create React Native App](https://github.com/react-community/create-react-native-app)创建的RN工程，会将ReactRootView设置为工程主Activity的ContentView，详见[《ReactNative设计与实现之四：实践》](https://zhuanlan.zhihu.com/p/45835664)的第二节：React-Native与原生开发的对比。
+通过前面的介绍，我们已经了解到，在Android上，RN工程其本身就是一个Android工程，与JS相关的一切都发生在ReactRootView内部。ReactRootView继承自FrameLayout，也就是说ReactRootView是一个View，我们可以像操作Android UI框架里的其他View一样来操作ReactRootView。通过[Create React Native App](https://github.com/react-community/create-react-native-app)创建的RN工程，会将ReactRootView设置为工程主Activity的ContentView，详见[《ReactNative设计与实现之二：实践》](https://zhuanlan.zhihu.com/p/45835664)的第二节：React-Native与原生开发的对比。
 
 在这里，我们的主Activty比较像一个容器，一个承载RN JS部分的容器，在一个工程中，我们可以有多个独立的RN容器，这些RN容器可以拥有独立的初始化流程，加载不同的JSBundle，处理不同的逻辑；此外，Fragment也可以作为RN容器，这样我们就可以在同一个页面加载多个RN容器了。这有点像WebView，我们可以初始化不同的WebView实例，加载不同的HTML页面，用以处理不同的业务；同时，我们也可以在同一个页面加载多个WebView。或许我们可以简单地认为RN容器是一种性能更优的WebView，毕竟，它们是如此的相似。
 
