@@ -1,0 +1,42 @@
+// Android ReactRootView
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+  super.onCreate(savedInstanceState);
+  
+  mReactRootView = new ReactRootView(this);
+  mReactInstanceManager = initReactInstanceManager();
+  mReactRootView.startReactapplication(mReactInstanceManager, "demo", null);
+  
+  setContentView(mReactRootView)
+}
+
+// Android Normal View
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.activity_main);
+}
+
+
+// iOS ReactRootView
+- (void)viewDidLoad
+{
+  [super viewDidLoad];
+  
+  self.rootView = [[RCTRootView alloc] initWithBridge:self.bridge
+									 moduleName:self.moduleName initialProperties:self.initialProperties];
+  UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc]
+                                        initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+  [indicator startAnimating];
+  self.rootView.loadingView = indicator;
+  
+  [self.view addSubview:self.rootView];
+}
+
+// iOS Normal View
+- (void)viewDidLoad
+{
+  [super viewDidLoad];
+  YourView view = [[YourView alloc] initWithDelegate:self];
+  [self.view addSubview:view];
+}
